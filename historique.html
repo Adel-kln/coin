@@ -164,11 +164,110 @@
     font-size: 12px;
     text-align: center;
   }
+   /* ---------- SCOREBOARD ---------- */
+  .board {
+    margin-top: 36px;
+    width: 100%;
+    max-width: 420px;
+    background: rgba(255,255,255,0.95);
+    border-radius: 22px;
+    padding: 22px 24px;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.22);
+  }
+  .board h3 {
+    margin: 0 0 16px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 18px;
+    text-align: center;
+    color: var(--ink);
+  }
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .score-row .flag-emoji { font-size: 28px; width: 36px; text-align: center; }
+  .score-row .label { font-weight: 700; width: 96px; font-size: 14.5px; }
+  .bar-bg {
+    flex: 1;
+    height: 16px;
+    background: #ece8f7;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width .6s ease;
+    width: 0%;
+  }
+  .bar-fill.dz { background: linear-gradient(90deg, var(--green), #2ecf85); }
+  .bar-fill.at { background: linear-gradient(90deg, var(--red), #ff5b6e); }
+  .score-row .count {
+    width: 34px;
+    text-align: right;
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .board .total {
+    text-align: center;
+    font-size: 12.5px;
+    color: #8a8294;
+    margin-top: 4px;
+  }
+  .board .status-line {
+    text-align: center;
+    font-size: 11.5px;
+    color: #b3acc0;
+    margin-top: 10px;
+  }
+
+  .confetti {
+    position: fixed;
+    top: -12px;
+    width: 9px;
+    height: 14px;
+    opacity: 0.95;
+    pointer-events: none;
+    z-index: 50;
+  }
+
+  footer {
+    margin-top: 28px;
+    color: rgba(255,255,255,0.6);
+    font-size: 12px;
+    text-align: center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .coin.flipping { animation: none; }
+    .coin:hover { transform: none; }
+  }
 </style>
 </head>
 <body>
 
 <nav class="top-nav"><a href="index.html">⬅ Retour au jeu</a></nav>
+
+<div class="board">
+    <h3>🏆 Résultats de tous les joueurs</h3>
+    <div class="score-row">
+      <div class="flag-emoji">🇩🇿</div>
+      <div class="label">Algérie (1)</div>
+      <div class="bar-bg"><div class="bar-fill dz" id="barDz"></div></div>
+      <div class="count" id="countDz">0</div>
+    </div>
+    <div class="score-row">
+      <div class="flag-emoji">🇦🇹</div>
+      <div class="label">Autriche (2)</div>
+      <div class="bar-bg"><div class="bar-fill at" id="barAt"></div></div>
+      <div class="count" id="countAt">0</div>
+    </div>
+    <div class="total" id="totalLabel">0 lancers au total</div>
+    <div class="status-line" id="statusLine"></div>
+  </div>
+</div>
 
 <h1 class="title">📜 Historique des joueurs</h1>
 <p class="subtitle">Tous les prénoms enregistrés et le drapeau qu'ils ont obtenu.</p>
