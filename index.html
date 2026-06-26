@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pile ou Face — DZ 🇩🇿 vs AT 🇦🇹</title>
+<style>
+  :root{
+    --green: #1aa260;
+    --white: #ffffff;
+    --red: #d6122a;
+    --red-deep: #b00d22;
+    --ink: #1b1430;
+    --gold: #ffc23c;
+    --bg1: #6c2bd9;
+    --bg2: #ff4d8d;
+    --bg3: #ffb238;
+    --card: rgba(255,255,255,0.96);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Baloo 2', 'Segoe UI', sans-serif;
+  }
+
+  body {
+    background: radial-gradient(circle at 20% 20%, var(--bg3), transparent 50%),
+                radial-gradient(circle at 80% 10%, var(--bg2), transparent 55%),
+                linear-gradient(160deg, var(--bg1), #2a1463 80%);
+    background-attachment: fixed;
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 60px;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  h1.title {
+    font-family: 'Fredoka', 'Baloo 2', sans-serif;
+    font-size: clamp(28px, 6vw, 48px);
+    color: #fff;
+    text-shadow: 0 4px 0 rgba(0,0,0,0.18);
+    margin: 8px 0 2px;
+    text-align: center;
+    letter-spacing: 0.5px;
+  }
+
+  p.subtitle {
+    color: rgba(255,255,255,0.85);
+    font-size: clamp(14px, 2.6vw, 18px);
+    margin: 0 0 28px;
+    text-align: center;
+    max-width: 480px;
+  }
+
+  .flags-row {
+    display:flex;
+    gap: 10px;
+    font-size: 26px;
+    margin-bottom: 6px;
+  }
+
+  /* ---------- CARD (login) ---------- */
+  .card {
+    background: var(--card);
+    border-radius: 28px;
+    padding: 32px 28px;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25), 0 0 0 6px rgba(255,255,255,0.15);
+    text-align: center;
+  }
+
+  .card h2 {
+    margin: 0 0 6px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 22px;
+  }
+  .card p.hint {
+    margin: 0 0 18px;
+    font-size: 14px;
+    color: #6b6378;
+  }
+
+  input#username {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 2px solid #e3def7;
+    font-size: 16px;
+    outline: none;
+    transition: border-color .15s ease;
+    font-family: inherit;
+  }
+  input#username:focus { border-color: var(--bg1); }
+
+  .btn {
+    margin-top: 14px;
+    width: 100%;
+    padding: 14px 16px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--bg2), var(--bg1));
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    font-family: 'Fredoka', sans-serif;
+    box-shadow: 0 8px 0 rgba(0,0,0,0.12);
+    transition: transform .08s ease, box-shadow .08s ease;
+  }
+  .btn:active { transform: translateY(4px); box-shadow: 0 4px 0 rgba(0,0,0,0.12); }
+  .btn:disabled { opacity: .55; cursor: not-allowed; }
+
+  .back-btn {
+    max-width: 280px;
+    margin-top: 18px;
+    background: linear-gradient(135deg, #ffc23c, #ff8a3c);
+    box-shadow: 0 8px 0 rgba(0,0,0,0.12);
+    font-size: 14.5px;
+    padding: 12px 16px;
+  }
+
+  .error-msg {
+    margin-top: 10px;
+    font-size: 13.5px;
+    color: var(--red-deep);
+    font-weight: 600;
+    min-height: 18px;
+  }
+
+  /* ---------- GAME AREA ---------- */
+  .game-wrap {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .hello {
+    color: #fff;
+    font-size: 16px;
+    margin-bottom: 18px;
+    text-align: center;
+  }
+  .hello b { color: var(--gold); }
+
+  .stage {
+    width: 260px;
+    height: 260px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 1200px;
+    margin-bottom: 8px;
+    position: relative;
+  }
+
+  .coin {
+    width: 200px;
+    height: 200px;
+    position: relative;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    cursor: pointer;
+    transition: transform .25s ease;
+    filter: drop-shadow(0 18px 24px rgba(0,0,0,0.35));
+  }
+  .coin:hover { transform: scale(1.04) translateY(-4px); }
+  .coin.disabled { cursor: default; }
+  .coin.disabled:hover { transform: none; }
+
+  .coin .face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 7px solid var(--gold);
+    box-shadow: inset 0 0 0 4px rgba(255,255,255,0.5), inset 0 -10px 24px rgba(0,0,0,0.18);
+  }
+
+  .face.dz {
+    background-color: var(--white);
+    background-image: linear-gradient(to right, var(--green) 0 50%, var(--white) 50% 100%);
+  }
+  .face.dz .crescent-wrap {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .face.dz svg { width: 62%; }
+
+  .face.at {
+    transform: rotateY(180deg);
+    background-color: var(--white);
+    background-image: linear-gradient(to bottom,
+      var(--red) 0%, var(--red) 33.33%,
+      var(--white) 33.33%, var(--white) 66.66%,
+      var(--red) 66.66%, var(--red) 100%);
+  }
+
+  .coin .rim {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--gold);
+    transform: translateZ(-6px);
+  }
+
+  @keyframes flipCoin {
+    0%   { transform: rotateY(0deg)    translateY(0)      scale(1); }
+    8%   { transform: rotateY(180deg)  translateY(-60px)  scale(1.05); }
+    16%  { transform: rotateY(360deg)  translateY(-110px) scale(1.08); }
+    24%  { transform: rotateY(540deg)  translateY(-150px) scale(1.1); }
+    32%  { transform: rotateY(720deg)  translateY(-170px) scale(1.1); }
+    40%  { transform: rotateY(900deg)  translateY(-170px) scale(1.1); }
+    48%  { transform: rotateY(1080deg) translateY(-170px) scale(1.1); }
+    56%  { transform: rotateY(1260deg) translateY(-150px) scale(1.08); }
+    64%  { transform: rotateY(1440deg) translateY(-110px) scale(1.06); }
+    72%  { transform: rotateY(1620deg) translateY(-60px)  scale(1.03); }
+    100% { transform: rotateY(var(--final-rot)) translateY(0) scale(1); }
+  }
+  .coin.flipping {
+    animation: flipCoin 2.6s linear forwards;
+  }
+
+  .tap-hint {
+    color: rgba(255,255,255,0.9);
+    font-size: 14px;
+    margin-top: 4px;
+    min-height: 20px;
+    text-align: center;
+    font-weight: 600;
+  }
+
+  .result-banner {
+    margin-top: 18px;
+    padding: 14px 26px;
+    border-radius: 18px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 19px;
+    text-align: center;
+    color: #fff;
+    background: rgba(0,0,0,0.18);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity .4s ease, transform .4s ease;
+    box-shadow: 0 0 0 4px rgba(255,255,255,0.12);
+  }
+  .result-banner.show { opacity: 1; transform: translateY(0); }
+  .result-banner .flagbig { font-size: 26px; vertical-align: middle; margin-right: 6px; }
+
+  /* ---------- SCOREBOARD ---------- */
+  .board {
+    margin-top: 36px;
+    width: 100%;
+    max-width: 420px;
+    background: rgba(255,255,255,0.95);
+    border-radius: 22px;
+    padding: 22px 24px;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.22);
+  }
+  .board h3 {
+    margin: 0 0 16px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 18px;
+    text-align: center;
+    color: var(--ink);
+  }
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .score-row .flag-emoji { font-size: 28px; width: 36px; text-align: center; }
+  .score-row .label { font-weight: 700; width: 86px; font-size: 14.5px; }
+  .bar-bg {
+    flex: 1;
+    height: 16px;
+    background: #ece8f7;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width .6s ease;
+  }
+  .bar-fill.dz { background: linear-gradient(90deg, var(--green), #2ecf85); }
+  .bar-fill.at { background: linear-gradient(90deg, var(--red), #ff5b6e); }
+  .score-row .count {
+    width: 34px;
+    text-align: right;
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .board .total {
+    text-align: center;
+    font-size: 12.5px;
+    color: #8a8294;
+    margin-top: 4px;
+  }
+
+  .confetti {
+    position: fixed;
+    top: -12px;
+    width: 9px;
+    height: 14px;
+    opacity: 0.95;
+    pointer-events: none;
+    z-index: 50;
+  }
+
+  footer {
+    margin-top: 28px;
+    color: rgba(255,255,255,0.6);
+    font-size: 12px;
+    text-align: center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .coin.flipping { animation: none; }
+    .coin:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="flags-row">🇩🇿 &nbsp;VS&nbsp; 🇦🇹</div>
+<h1 class="title">Pile ou Face</h1>
+<p class="subtitle">Une seule chance par prénom. Un tirage au hasard. Tu peux retester avec un autre prénom après !</p>
+
+<!-- LOGIN CARD -->
+<div class="card" id="loginCard">
+  <h2>Avant de commencer</h2>
+  <p class="hint">Inscris ton prénom pour jouer (une seule tentative par nom).</p>
+  <input id="username" type="text" maxlength="24" placeholder="Ton prénom" autocomplete="off">
+  <button class="btn" id="startBtn">Lancer la pièce</button>
+  <div class="error-msg" id="errorMsg"></div>
+</div>
+
+<!-- GAME AREA -->
+<div class="game-wrap" id="gameWrap">
+  <div class="hello" id="helloMsg"></div>
+
+  <div class="stage">
+    <div class="coin" id="coin">
+      <div class="rim"></div>
+      <div class="face dz">
+        <div class="crescent-wrap">
+          <svg viewBox="0 0 100 100">
+            <circle cx="42" cy="50" r="22" fill="var(--red)"/>
+            <circle cx="50" cy="50" r="18" fill="var(--white)"/>
+            <g transform="translate(58,50)">
+              <polygon points="0,-13 3,-4 12,-4 5,1 7,10 0,5 -7,10 -5,1 -12,-4 -3,-4"
+                fill="var(--red)" transform="scale(1)"/>
+            </g>
+          </svg>
+        </div>
+      </div>
+      <div class="face at"></div>
+    </div>
+  </div>
+  <div class="tap-hint" id="tapHint">👉 Touche la pièce pour la lancer</div>
+  <div class="result-banner" id="resultBanner"></div>
+  <button class="btn back-btn" id="backBtn" style="display:none;">🔁 Tester avec un autre nom</button>
+
+  <div class="board">
+    <h3>🏆 Résultats de tous les joueurs</h3>
+    <div class="score-row">
+      <div class="flag-emoji">🇩🇿</div>
+      <div class="label">Algérie</div>
+      <div class="bar-bg"><div class="bar-fill dz" id="barDz" style="width:0%"></div></div>
+      <div class="count" id="countDz">0</div>
+    </div>
+    <div class="score-row">
+      <div class="flag-emoji">🇦🇹</div>
+      <div class="label">Autriche</div>
+      <div class="bar-bg"><div class="bar-fill at" id="barAt" style="width:0%"></div></div>
+      <div class="count" id="countAt">0</div>
+    </div>
+    <div class="total" id="totalLabel">0 lancers au total</div>
+  </div>
+</div>
+
+<footer>Fait pour le fun 🎉 — un seul lancer par personne</footer>
+
+<script>
+(function(){
+  const loginCard = document.getElementById('loginCard');
+  const gameWrap = document.getElementById('gameWrap');
+  const usernameInput = document.getElementById('username');
+  const startBtn = document.getElementById('startBtn');
+  const errorMsg = document.getElementById('errorMsg');
+  const helloMsg = document.getElementById('helloMsg');
+  const coin = document.getElementById('coin');
+  const tapHint = document.getElementById('tapHint');
+  const resultBanner = document.getElementById('resultBanner');
+  const backBtn = document.getElementById('backBtn');
+  const barDz = document.getElementById('barDz');
+  const barAt = document.getElementById('barAt');
+  const countDz = document.getElementById('countDz');
+  const countAt = document.getElementById('countAt');
+  const totalLabel = document.getElementById('totalLabel');
+
+  const SCORE_KEY = 'flag_coin_scores';
+  const PLAYERS_PREFIX = 'flag_coin_player:';
+
+  let hasPlayed = false;
+  let currentUser = null;
+
+  function normalizeName(name){
+    return name.trim().toLowerCase();
+  }
+
+  function wait(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+  // Réessaie une opération de stockage plusieurs fois avant d'abandonner,
+  // car l'API de stockage peut renvoyer des erreurs serveur ponctuelles.
+  async function withRetry(fn, attempts = 4, baseDelay = 350){
+    let lastErr = null;
+    for(let i = 0; i < attempts; i++){
+      try{
+        return await fn();
+      }catch(e){
+        lastErr = e;
+        if(i < attempts - 1){
+          await wait(baseDelay * (i + 1)); // backoff progressif
+        }
+      }
+    }
+    throw lastErr;
+  }
+
+  async function getScores(){
+    try{
+      const res = await withRetry(() => window.storage.get(SCORE_KEY, true));
+      if(res && res.value) return JSON.parse(res.value);
+    }catch(e){
+      console.warn('Scores indisponibles pour le moment, valeurs par défaut utilisées.', e);
+    }
+    return { dz: 0, at: 0 };
+  }
+
+  async function saveScores(scores){
+    try{
+      await withRetry(() => window.storage.set(SCORE_KEY, JSON.stringify(scores), true));
+      return true;
+    }catch(e){
+      console.error('Erreur sauvegarde scores après plusieurs tentatives', e);
+      return false;
+    }
+  }
+
+  async function renderScores(){
+    const scores = await getScores();
+    const total = scores.dz + scores.at;
+    const pctDz = total ? (scores.dz/total*100) : 0;
+    const pctAt = total ? (scores.at/total*100) : 0;
+    barDz.style.width = pctDz + '%';
+    barAt.style.width = pctAt + '%';
+    countDz.textContent = scores.dz;
+    countAt.textContent = scores.at;
+    totalLabel.textContent = total + (total === 1 ? ' lancer au total' : ' lancers au total');
+    return scores;
+  }
+
+  async function hasNamePlayed(normName){
+    try{
+      const res = await withRetry(() => window.storage.get(PLAYERS_PREFIX + normName, true), 2, 250);
+      return !!(res && res.value);
+    }catch(e){
+      // Si le stockage est indisponible, on laisse jouer plutôt que de bloquer
+      // injustement quelqu'un qui n'a en réalité jamais joué.
+      console.warn('Vérification du joueur indisponible, on autorise le lancer.', e);
+      return false;
+    }
+  }
+
+  async function markNamePlayed(normName, result){
+    try{
+      await withRetry(() => window.storage.set(PLAYERS_PREFIX + normName, result, true));
+      return true;
+    }catch(e){
+      console.error('Erreur enregistrement joueur après plusieurs tentatives', e);
+      return false;
+    }
+  }
+
+  startBtn.addEventListener('click', async () => {
+    const raw = usernameInput.value;
+    const name = raw.trim();
+    errorMsg.textContent = '';
+
+    if(!name){
+      errorMsg.textContent = 'Entre ton prénom pour continuer.';
+      return;
+    }
+
+    startBtn.disabled = true;
+    startBtn.textContent = 'Vérification...';
+
+    const normName = normalizeName(name);
+    const already = await hasNamePlayed(normName);
+
+    startBtn.disabled = false;
+    startBtn.textContent = 'Lancer la pièce';
+
+    if(already){
+      errorMsg.textContent = `"${name}" a déjà joué. Une seule chance par personne !`;
+      return;
+    }
+
+    currentUser = { name, normName };
+    loginCard.style.display = 'none';
+    gameWrap.style.display = 'flex';
+    helloMsg.innerHTML = `Salut <b>${escapeHtml(name)}</b> 👋 — c'est ton seul lancer, vas-y !`;
+    await renderScores();
+  });
+
+  usernameInput.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter') startBtn.click();
+  });
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  coin.addEventListener('click', async () => {
+    if(hasPlayed || !currentUser) return;
+    hasPlayed = true;
+    coin.classList.add('disabled');
+    tapHint.textContent = '🎲 La pièce tourne...';
+
+    // Choix aléatoire
+    const winner = Math.random() < 0.5 ? 'dz' : 'at';
+    // Nombre de tours complets + alignement final
+    const baseSpins = 5; // tours complets garantis
+    const finalRotation = winner === 'dz'
+      ? baseSpins * 360            // face DZ visible (0°, multiples de 360)
+      : baseSpins * 360 + 180;     // face AT visible (180°, +180)
+
+    coin.style.setProperty('--final-rot', finalRotation + 'deg');
+    coin.classList.add('flipping');
+
+    coin.addEventListener('animationend', async function onEnd(){
+      coin.removeEventListener('animationend', onEnd);
+      await onCoinLanded(winner);
+    }, { once: true });
+  });
+
+  async function onCoinLanded(winner){
+    // Enregistrer le résultat pour ce joueur (empêche de rejouer)
+    const playerSaved = await markNamePlayed(currentUser.normName, winner);
+
+    // Mettre à jour le score global (on relit juste avant d'écrire pour limiter les collisions)
+    const scores = await getScores();
+    scores[winner] = (scores[winner] || 0) + 1;
+    const scoreSaved = await saveScores(scores);
+    await renderScores();
+
+    const isDz = winner === 'dz';
+    resultBanner.innerHTML = isDz
+      ? `<span class="flagbig">🇩🇿</span> L'Algérie l'emporte cette fois !`
+      : `<span class="flagbig">🇦🇹</span> L'Autriche l'emporte cette fois !`;
+    resultBanner.style.background = isDz
+      ? 'linear-gradient(135deg, #1aa260, #0c7a45)'
+      : 'linear-gradient(135deg, #d6122a, #8e0c1c)';
+    resultBanner.classList.add('show');
+    backBtn.style.display = 'block';
+
+    if(playerSaved && scoreSaved){
+      tapHint.textContent = 'Merci d\'avoir joué — reviens voir le classement total ⬇️';
+    } else {
+      // Le résultat reste affiché et valable pour le joueur, mais on le prévient
+      // que le compteur global n'a peut-être pas pu être mis à jour côté serveur.
+      tapHint.textContent = '⚠️ Ton résultat est là, mais le classement global a eu un souci de connexion. Actualise la page pour réessayer de le voir à jour.';
+    }
+
+    launchConfetti(isDz ? '#1aa260' : '#d6122a');
+  }
+
+  function launchConfetti(color){
+    const colors = [color, '#ffc23c', '#ffffff', '#6c2bd9', '#ff4d8d'];
+    const count = 80;
+    for(let i=0;i<count;i++){
+      const el = document.createElement('div');
+      el.className = 'confetti';
+      const c = colors[Math.floor(Math.random()*colors.length)];
+      el.style.background = c;
+      el.style.left = Math.random()*100 + 'vw';
+      el.style.transform = `rotate(${Math.random()*360}deg)`;
+      const duration = 2.2 + Math.random()*1.6;
+      const drift = (Math.random()*160 - 80);
+      el.style.transition = `transform ${duration}s cubic-bezier(.2,.6,.4,1), top ${duration}s cubic-bezier(.2,.6,.4,1), opacity ${duration}s ease`;
+      document.body.appendChild(el);
+      requestAnimationFrame(() => {
+        el.style.top = '110vh';
+        el.style.transform = `translateX(${drift}px) rotate(${Math.random()*720}deg)`;
+        el.style.opacity = '0.15';
+      });
+      setTimeout(() => el.remove(), duration*1000 + 200);
+    }
+  }
+
+  backBtn.addEventListener('click', () => {
+    // Réinitialise l'état du jeu sans toucher aux scores globaux
+    hasPlayed = false;
+    currentUser = null;
+
+    coin.classList.remove('flipping', 'disabled');
+    coin.style.removeProperty('--final-rot');
+
+    resultBanner.classList.remove('show');
+    resultBanner.innerHTML = '';
+    resultBanner.style.background = '';
+
+    backBtn.style.display = 'none';
+    tapHint.textContent = '👉 Touche la pièce pour la lancer';
+
+    gameWrap.style.display = 'none';
+    loginCard.style.display = 'block';
+
+    usernameInput.value = '';
+    errorMsg.textContent = '';
+    usernameInput.focus();
+  });
+
+  // Charger le tableau de scores dès le départ (visible même avant connexion ? -> on attend la connexion)
+})();
+</script>
+</body>
+</html>
