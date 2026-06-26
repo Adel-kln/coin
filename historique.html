@@ -360,6 +360,43 @@
   });
 
   searchInput.addEventListener('input', renderList);
+  
+    const loginCard = document.getElementById('loginCard');
+  const gameWrap = document.getElementById('gameWrap');
+  const usernameInput = document.getElementById('username');
+  const startBtn = document.getElementById('startBtn');
+  const errorMsg = document.getElementById('errorMsg');
+  const helloMsg = document.getElementById('helloMsg');
+  const coin = document.getElementById('coin');
+  const tapHint = document.getElementById('tapHint');
+  const resultBanner = document.getElementById('resultBanner');
+  const barDz = document.getElementById('barDz');
+  const barAt = document.getElementById('barAt');
+  const countDz = document.getElementById('countDz');
+  const countAt = document.getElementById('countAt');
+  const totalLabel = document.getElementById('totalLabel');
+  const statusLine = document.getElementById('statusLine');
+  
+  
+  function renderScores(scores){
+    const dz = (scores && scores.dz) || 0;
+    const at = (scores && scores.at) || 0;
+    const total = dz + at;
+    barDz.style.width = (total ? (dz/total*100) : 0) + '%';
+    barAt.style.width = (total ? (at/total*100) : 0) + '%';
+    countDz.textContent = dz;
+    countAt.textContent = at;
+    totalLabel.textContent = total + (total === 1 ? ' lancer au total' : ' lancers au total');
+  }
+
+  onValue(scoresRef, (snap) => {
+    statusLine.textContent = '';
+    const data = snap.val();
+    renderScores(data || { dz: 0, at: 0 });
+  }, (err) => {
+    console.error('Erreur de connexion au classement', err);
+    statusLine.textContent = '⚠️ Classement indisponible pour le moment (connexion).';
+  });
 </script>
 </body>
 </html>
