@@ -9,8 +9,8 @@
 //    -> choisis "Mode test" pour commencer (tu pourras sécuriser plus tard)
 // ============================================================
 
-import { initializeApp } from "firebase/app";
-import { getDatabase } from "firebase/database";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+import { getDatabase } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDnPrsGCoMwd2YZvnSwKGKX_fmYVa0UUnE",
@@ -25,4 +25,4 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-export { db };
+import { firebaseConfig } from './firebase-config.js';
