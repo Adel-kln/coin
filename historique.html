@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Historique des joueurs — Pile ou Face</title>
+<style>
+  :root{
+    --green: #1aa260;
+    --red: #d6122a;
+    --ink: #1b1430;
+    --gold: #ffc23c;
+    --bg1: #6c2bd9;
+    --bg2: #ff4d8d;
+    --bg3: #ffb238;
+    --card: rgba(255,255,255,0.96);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Baloo 2', 'Segoe UI', sans-serif;
+  }
+
+  body {
+    background: radial-gradient(circle at 20% 20%, var(--bg3), transparent 50%),
+                radial-gradient(circle at 80% 10%, var(--bg2), transparent 55%),
+                linear-gradient(160deg, var(--bg1), #2a1463 80%);
+    background-attachment: fixed;
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 60px;
+  }
+
+  nav.top-nav {
+    width: 100%;
+    max-width: 460px;
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 6px;
+  }
+  nav.top-nav a {
+    color: rgba(255,255,255,0.9);
+    text-decoration: none;
+    font-size: 13.5px;
+    font-weight: 700;
+    background: rgba(255,255,255,0.16);
+    padding: 8px 14px;
+    border-radius: 20px;
+    transition: background .15s ease;
+  }
+  nav.top-nav a:hover { background: rgba(255,255,255,0.28); }
+
+  h1.title {
+    font-family: 'Fredoka', 'Baloo 2', sans-serif;
+    font-size: clamp(26px, 5.5vw, 42px);
+    color: #fff;
+    text-shadow: 0 4px 0 rgba(0,0,0,0.18);
+    margin: 8px 0 2px;
+    text-align: center;
+  }
+
+  p.subtitle {
+    color: rgba(255,255,255,0.85);
+    font-size: clamp(13px, 2.4vw, 16px);
+    margin: 0 0 22px;
+    text-align: center;
+    max-width: 460px;
+  }
+
+  .panel {
+    width: 100%;
+    max-width: 480px;
+    background: var(--card);
+    border-radius: 24px;
+    padding: 18px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25), 0 0 0 6px rgba(255,255,255,0.15);
+  }
+
+  .search-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .search-row input {
+    flex: 1;
+    padding: 11px 14px;
+    border-radius: 12px;
+    border: 2px solid #e3def7;
+    font-size: 14.5px;
+    outline: none;
+    font-family: inherit;
+  }
+  .search-row input:focus { border-color: var(--bg1); }
+
+  .list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f6f3fc;
+    border-radius: 14px;
+    padding: 10px 14px;
+  }
+  .row .left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+  .row .rank {
+    font-size: 12px;
+    color: #9c93ab;
+    width: 26px;
+    flex-shrink: 0;
+  }
+  .row .name {
+    font-weight: 700;
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .row .time {
+    font-size: 11.5px;
+    color: #9c93ab;
+    flex-shrink: 0;
+  }
+  .row .flag-result {
+    font-size: 24px;
+    flex-shrink: 0;
+    margin-left: 10px;
+  }
+
+  .empty-state, .loading-state, .error-state {
+    text-align: center;
+    color: #8a8294;
+    font-size: 14px;
+    padding: 30px 10px;
+  }
+  .error-state { color: var(--red); font-weight: 600; }
+
+  .stats-line {
+    text-align: center;
+    font-size: 12.5px;
+    color: #8a8294;
+    margin-top: 12px;
+  }
+
+  footer {
+    margin-top: 28px;
+    color: rgba(255,255,255,0.6);
+    font-size: 12px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<nav class="top-nav"><a href="index.html">⬅ Retour au jeu</a></nav>
+
+<h1 class="title">📜 Historique des joueurs</h1>
+<p class="subtitle">Tous les prénoms enregistrés et le drapeau qu'ils ont obtenu.</p>
+
+<div class="panel">
+  <div class="search-row">
+    <input id="searchInput" type="text" placeholder="Rechercher un prénom..." autocomplete="off">
+  </div>
+  <div class="list" id="list">
+    <div class="loading-state" id="loadingState">Chargement de l'historique...</div>
+  </div>
+  <div class="stats-line" id="statsLine"></div>
+</div>
+
+<footer>Fait pour le fun 🎉</footer>
+
+<script type="module">
+  import { firebaseConfig } from './firebase-config.js';
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+  import {
+    getDatabase, ref, onValue, query, orderByChild
+  } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const listEl = document.getElementById('list');
+  const searchInput = document.getElementById('searchInput');
+  const statsLine = document.getElementById('statsLine');
+
+  let allPlayers = [];
+
+  function formatTime(ts){
+    if(!ts) return '';
+    const d = new Date(ts);
+    return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) +
+           ' à ' +
+           d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function renderList(){
+    const filter = searchInput.value.trim().toLowerCase();
+    const filtered = filter
+      ? allPlayers.filter(p => p.name.toLowerCase().includes(filter))
+      : allPlayers;
+
+    if(filtered.length === 0){
+      listEl.innerHTML = `<div class="empty-state">${
+        allPlayers.length === 0 ? 'Personne n\'a encore joué.' : 'Aucun prénom ne correspond à ta recherche.'
+      }</div>`;
+      return;
+    }
+
+    listEl.innerHTML = filtered.map((p, i) => {
+      const flag = p.result === 'dz' ? '🇩🇿' : '🇦🇹';
+      return `
+        <div class="row">
+          <div class="left">
+            <span class="rank">#${i + 1}</span>
+            <span class="name">${escapeHtml(p.name)}</span>
+            <span class="time">${formatTime(p.timestamp)}</span>
+          </div>
+          <span class="flag-result">${flag}</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  const playersRef = query(ref(db, 'players'), orderByChild('timestamp'));
+
+  onValue(playersRef, (snap) => {
+    const data = snap.val() || {};
+    // Realtime Database renvoie les clés triées par ordre croissant ;
+    // on inverse pour afficher les joueurs les plus récents en premier.
+    allPlayers = Object.values(data).reverse();
+
+    const dzCount = allPlayers.filter(p => p.result === 'dz').length;
+    const atCount = allPlayers.filter(p => p.result === 'at').length;
+    statsLine.textContent = `${allPlayers.length} joueur${allPlayers.length === 1 ? '' : 's'} au total — 🇩🇿 ${dzCount} · 🇦🇹 ${atCount}`;
+    renderList();
+  }, (err) => {
+    console.error('Erreur de chargement de l\'historique', err);
+    listEl.innerHTML = `<div class="error-state">⚠️ Impossible de charger l'historique (connexion).</div>`;
+  });
+
+  searchInput.addEventListener('input', renderList);
+</script>
+</body>
+</html>

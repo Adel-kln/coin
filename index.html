@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pile ou Face — DZ 🇩🇿 vs AT 🇦🇹</title>
+<title>Pile ou Face — Algérie 🇩🇿 vs Autriche 🇦🇹</title>
 <style>
   :root{
     --green: #1aa260;
@@ -40,6 +40,25 @@
     position: relative;
   }
 
+  nav.top-nav {
+    width: 100%;
+    max-width: 460px;
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 6px;
+  }
+  nav.top-nav a {
+    color: rgba(255,255,255,0.9);
+    text-decoration: none;
+    font-size: 13.5px;
+    font-weight: 700;
+    background: rgba(255,255,255,0.16);
+    padding: 8px 14px;
+    border-radius: 20px;
+    transition: background .15s ease;
+  }
+  nav.top-nav a:hover { background: rgba(255,255,255,0.28); }
+
   h1.title {
     font-family: 'Fredoka', 'Baloo 2', sans-serif;
     font-size: clamp(28px, 6vw, 48px);
@@ -53,16 +72,63 @@
   p.subtitle {
     color: rgba(255,255,255,0.85);
     font-size: clamp(14px, 2.6vw, 18px);
-    margin: 0 0 28px;
+    margin: 0 0 24px;
     text-align: center;
     max-width: 480px;
   }
 
-  .flags-row {
-    display:flex;
-    gap: 10px;
-    font-size: 26px;
-    margin-bottom: 6px;
+  /* ---------- LEGEND: flags above the coin ---------- */
+  .legend {
+    display: flex;
+    gap: 28px;
+    margin-bottom: 14px;
+  }
+  .legend .item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .legend .flag-box {
+    width: 64px;
+    height: 44px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 3px solid var(--gold);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+  }
+  .legend .flag-box.dz {
+    background: linear-gradient(to right, var(--green) 0 50%, var(--white) 50% 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .legend .flag-box.dz svg { width: 60%; }
+  .legend .flag-box.at {
+    background: linear-gradient(to bottom,
+      var(--red) 0%, var(--red) 33.33%,
+      var(--white) 33.33%, var(--white) 66.66%,
+      var(--red) 66.66%, var(--red) 100%);
+  }
+  .legend .num-badge {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--ink);
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 0 rgba(0,0,0,0.18);
+  }
+  .legend .item span.country {
+    color: #fff;
+    font-size: 12.5px;
+    font-weight: 700;
   }
 
   /* ---------- CARD (login) ---------- */
@@ -117,15 +183,6 @@
   .btn:active { transform: translateY(4px); box-shadow: 0 4px 0 rgba(0,0,0,0.12); }
   .btn:disabled { opacity: .55; cursor: not-allowed; }
 
-  .back-btn {
-    max-width: 280px;
-    margin-top: 18px;
-    background: linear-gradient(135deg, #ffc23c, #ff8a3c);
-    box-shadow: 0 8px 0 rgba(0,0,0,0.12);
-    font-size: 14.5px;
-    padding: 12px 16px;
-  }
-
   .error-msg {
     margin-top: 10px;
     font-size: 13.5px;
@@ -145,7 +202,7 @@
   .hello {
     color: #fff;
     font-size: 16px;
-    margin-bottom: 18px;
+    margin-bottom: 10px;
     text-align: center;
   }
   .hello b { color: var(--gold); }
@@ -185,32 +242,18 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
-    border: 7px solid var(--gold);
+    border: 8px solid var(--gold);
     box-shadow: inset 0 0 0 4px rgba(255,255,255,0.5), inset 0 -10px 24px rgba(0,0,0,0.18);
+    background: linear-gradient(160deg, #fff6df, #ffd97a);
   }
-
-  .face.dz {
-    background-color: var(--white);
-    background-image: linear-gradient(to right, var(--green) 0 50%, var(--white) 50% 100%);
+  .coin .face .num {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 92px;
+    font-weight: 700;
+    color: var(--ink);
+    text-shadow: 0 3px 0 rgba(255,255,255,0.6), 0 -2px 4px rgba(0,0,0,0.12);
   }
-  .face.dz .crescent-wrap {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .face.dz svg { width: 62%; }
-
-  .face.at {
-    transform: rotateY(180deg);
-    background-color: var(--white);
-    background-image: linear-gradient(to bottom,
-      var(--red) 0%, var(--red) 33.33%,
-      var(--white) 33.33%, var(--white) 66.66%,
-      var(--red) 66.66%, var(--red) 100%);
-  }
+  .face.face2 { transform: rotateY(180deg); }
 
   .coin .rim {
     position: absolute;
@@ -288,7 +331,7 @@
     margin-bottom: 14px;
   }
   .score-row .flag-emoji { font-size: 28px; width: 36px; text-align: center; }
-  .score-row .label { font-weight: 700; width: 86px; font-size: 14.5px; }
+  .score-row .label { font-weight: 700; width: 96px; font-size: 14.5px; }
   .bar-bg {
     flex: 1;
     height: 16px;
@@ -300,6 +343,7 @@
     height: 100%;
     border-radius: 10px;
     transition: width .6s ease;
+    width: 0%;
   }
   .bar-fill.dz { background: linear-gradient(90deg, var(--green), #2ecf85); }
   .bar-fill.at { background: linear-gradient(90deg, var(--red), #ff5b6e); }
@@ -314,6 +358,12 @@
     font-size: 12.5px;
     color: #8a8294;
     margin-top: 4px;
+  }
+  .board .status-line {
+    text-align: center;
+    font-size: 11.5px;
+    color: #b3acc0;
+    margin-top: 10px;
   }
 
   .confetti {
@@ -341,9 +391,30 @@
 </head>
 <body>
 
-<div class="flags-row">🇩🇿 &nbsp;VS&nbsp; 🇦🇹</div>
+<nav class="top-nav"><a href="historique.html">📜 Voir l'historique des joueurs</a></nav>
+
 <h1 class="title">Pile ou Face</h1>
-<p class="subtitle">Une seule chance par prénom. Un tirage au hasard. Tu peux retester avec un autre prénom après !</p>
+<p class="subtitle">Une seule chance par prénom. Un tirage au hasard. Quel numéro va tomber ?</p>
+
+<div class="legend">
+  <div class="item">
+    <div class="num-badge">1</div>
+    <div class="flag-box dz">
+      <svg viewBox="0 0 100 100">
+        <circle cx="42" cy="50" r="22" fill="#d6122a"/>
+        <circle cx="50" cy="50" r="18" fill="#ffffff"/>
+        <polygon points="58,37 61,46 70,46 63,51 65,60 58,55 51,60 53,51 46,46 55,46"
+          fill="#d6122a"/>
+      </svg>
+    </div>
+    <span class="country">🇩🇿 Algérie</span>
+  </div>
+  <div class="item">
+    <div class="num-badge">2</div>
+    <div class="flag-box at"></div>
+    <span class="country">🇦🇹 Autriche</span>
+  </div>
+</div>
 
 <!-- LOGIN CARD -->
 <div class="card" id="loginCard">
@@ -361,47 +432,46 @@
   <div class="stage">
     <div class="coin" id="coin">
       <div class="rim"></div>
-      <div class="face dz">
-        <div class="crescent-wrap">
-          <svg viewBox="0 0 100 100">
-            <circle cx="42" cy="50" r="22" fill="var(--red)"/>
-            <circle cx="50" cy="50" r="18" fill="var(--white)"/>
-            <g transform="translate(58,50)">
-              <polygon points="0,-13 3,-4 12,-4 5,1 7,10 0,5 -7,10 -5,1 -12,-4 -3,-4"
-                fill="var(--red)" transform="scale(1)"/>
-            </g>
-          </svg>
-        </div>
-      </div>
-      <div class="face at"></div>
+      <div class="face face1"><span class="num">1</span></div>
+      <div class="face face2"><span class="num">2</span></div>
     </div>
   </div>
   <div class="tap-hint" id="tapHint">👉 Touche la pièce pour la lancer</div>
   <div class="result-banner" id="resultBanner"></div>
-  <button class="btn back-btn" id="backBtn" style="display:none;">🔁 Tester avec un autre nom</button>
 
   <div class="board">
     <h3>🏆 Résultats de tous les joueurs</h3>
     <div class="score-row">
       <div class="flag-emoji">🇩🇿</div>
-      <div class="label">Algérie</div>
-      <div class="bar-bg"><div class="bar-fill dz" id="barDz" style="width:0%"></div></div>
+      <div class="label">Algérie (1)</div>
+      <div class="bar-bg"><div class="bar-fill dz" id="barDz"></div></div>
       <div class="count" id="countDz">0</div>
     </div>
     <div class="score-row">
       <div class="flag-emoji">🇦🇹</div>
-      <div class="label">Autriche</div>
-      <div class="bar-bg"><div class="bar-fill at" id="barAt" style="width:0%"></div></div>
+      <div class="label">Autriche (2)</div>
+      <div class="bar-bg"><div class="bar-fill at" id="barAt"></div></div>
       <div class="count" id="countAt">0</div>
     </div>
     <div class="total" id="totalLabel">0 lancers au total</div>
+    <div class="status-line" id="statusLine"></div>
   </div>
 </div>
 
 <footer>Fait pour le fun 🎉 — un seul lancer par personne</footer>
 
-<script>
-(function(){
+<script type="module">
+  import { firebaseConfig } from './firebase-config.js';
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+  import {
+    getDatabase, ref, get, set, runTransaction, onValue
+  } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const scoresRef = ref(db, 'scores');
+
   const loginCard = document.getElementById('loginCard');
   const gameWrap = document.getElementById('gameWrap');
   const usernameInput = document.getElementById('username');
@@ -411,15 +481,12 @@
   const coin = document.getElementById('coin');
   const tapHint = document.getElementById('tapHint');
   const resultBanner = document.getElementById('resultBanner');
-  const backBtn = document.getElementById('backBtn');
   const barDz = document.getElementById('barDz');
   const barAt = document.getElementById('barAt');
   const countDz = document.getElementById('countDz');
   const countAt = document.getElementById('countAt');
   const totalLabel = document.getElementById('totalLabel');
-
-  const SCORE_KEY = 'flag_coin_scores';
-  const PLAYERS_PREFIX = 'flag_coin_player:';
+  const statusLine = document.getElementById('statusLine');
 
   let hasPlayed = false;
   let currentUser = null;
@@ -428,78 +495,69 @@
     return name.trim().toLowerCase();
   }
 
-  function wait(ms){ return new Promise(r => setTimeout(r, ms)); }
-
-  // Réessaie une opération de stockage plusieurs fois avant d'abandonner,
-  // car l'API de stockage peut renvoyer des erreurs serveur ponctuelles.
-  async function withRetry(fn, attempts = 4, baseDelay = 350){
-    let lastErr = null;
-    for(let i = 0; i < attempts; i++){
-      try{
-        return await fn();
-      }catch(e){
-        lastErr = e;
-        if(i < attempts - 1){
-          await wait(baseDelay * (i + 1)); // backoff progressif
-        }
-      }
-    }
-    throw lastErr;
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
   }
 
-  async function getScores(){
-    try{
-      const res = await withRetry(() => window.storage.get(SCORE_KEY, true));
-      if(res && res.value) return JSON.parse(res.value);
-    }catch(e){
-      console.warn('Scores indisponibles pour le moment, valeurs par défaut utilisées.', e);
-    }
-    return { dz: 0, at: 0 };
-  }
-
-  async function saveScores(scores){
-    try{
-      await withRetry(() => window.storage.set(SCORE_KEY, JSON.stringify(scores), true));
-      return true;
-    }catch(e){
-      console.error('Erreur sauvegarde scores après plusieurs tentatives', e);
-      return false;
-    }
-  }
-
-  async function renderScores(){
-    const scores = await getScores();
-    const total = scores.dz + scores.at;
-    const pctDz = total ? (scores.dz/total*100) : 0;
-    const pctAt = total ? (scores.at/total*100) : 0;
-    barDz.style.width = pctDz + '%';
-    barAt.style.width = pctAt + '%';
-    countDz.textContent = scores.dz;
-    countAt.textContent = scores.at;
+  // ---------- Tableau des scores en direct, partagé entre tous les visiteurs ----------
+  function renderScores(scores){
+    const dz = (scores && scores.dz) || 0;
+    const at = (scores && scores.at) || 0;
+    const total = dz + at;
+    barDz.style.width = (total ? (dz/total*100) : 0) + '%';
+    barAt.style.width = (total ? (at/total*100) : 0) + '%';
+    countDz.textContent = dz;
+    countAt.textContent = at;
     totalLabel.textContent = total + (total === 1 ? ' lancer au total' : ' lancers au total');
-    return scores;
   }
 
+  onValue(scoresRef, (snap) => {
+    statusLine.textContent = '';
+    const data = snap.val();
+    renderScores(data || { dz: 0, at: 0 });
+  }, (err) => {
+    console.error('Erreur de connexion au classement', err);
+    statusLine.textContent = '⚠️ Classement indisponible pour le moment (connexion).';
+  });
+
+  // ---------- Vérifie si ce nom a déjà joué ----------
   async function hasNamePlayed(normName){
-    try{
-      const res = await withRetry(() => window.storage.get(PLAYERS_PREFIX + normName, true), 2, 250);
-      return !!(res && res.value);
-    }catch(e){
-      // Si le stockage est indisponible, on laisse jouer plutôt que de bloquer
-      // injustement quelqu'un qui n'a en réalité jamais joué.
-      console.warn('Vérification du joueur indisponible, on autorise le lancer.', e);
-      return false;
-    }
+    const playerRef = ref(db, 'players/' + normName);
+    const snap = await get(playerRef);
+    return snap.exists();
   }
 
-  async function markNamePlayed(normName, result){
+  // ---------- Enregistre le joueur + incrémente le score, de façon sécurisée ----------
+  // L'unicité du prénom est garantie par les règles de la base (un joueur existant
+  // ne peut pas être écrasé), pas seulement par la vérification côté client.
+  async function recordResult(normName, displayName, winner){
+    const playerRef = ref(db, 'players/' + normName);
+
     try{
-      await withRetry(() => window.storage.set(PLAYERS_PREFIX + normName, result, true));
-      return true;
+      // set() échoue si les règles de sécurité détectent que ce joueur existe déjà
+      // (voir le guide d'installation : règle ".write": "!data.exists()")
+      await set(playerRef, {
+        name: displayName,
+        result: winner,
+        timestamp: Date.now()
+      });
     }catch(e){
-      console.error('Erreur enregistrement joueur après plusieurs tentatives', e);
-      return false;
+      if(e && e.code === 'PERMISSION_DENIED'){
+        throw new Error('ALREADY_PLAYED');
+      }
+      throw e;
     }
+
+    // Le joueur est bien enregistré : on incrémente le score de façon atomique
+    // (une transaction relit la valeur courante côté serveur avant d'écrire,
+    // donc deux lancers simultanés ne s'écrasent jamais l'un l'autre).
+    await runTransaction(scoresRef, (current) => {
+      const updated = current ? { ...current } : { dz: 0, at: 0 };
+      updated[winner] = (updated[winner] || 0) + 1;
+      return updated;
+    });
   }
 
   startBtn.addEventListener('click', async () => {
@@ -516,32 +574,35 @@
     startBtn.textContent = 'Vérification...';
 
     const normName = normalizeName(name);
-    const already = await hasNamePlayed(normName);
+
+    try{
+      const already = await hasNamePlayed(normName);
+      if(already){
+        errorMsg.textContent = `"${name}" a déjà joué. Une seule chance par personne !`;
+        startBtn.disabled = false;
+        startBtn.textContent = 'Lancer la pièce';
+        return;
+      }
+    }catch(e){
+      console.error('Erreur de vérification du joueur', e);
+      errorMsg.textContent = '⚠️ Connexion au classement impossible. Vérifie ta connexion et réessaie.';
+      startBtn.disabled = false;
+      startBtn.textContent = 'Lancer la pièce';
+      return;
+    }
 
     startBtn.disabled = false;
     startBtn.textContent = 'Lancer la pièce';
-
-    if(already){
-      errorMsg.textContent = `"${name}" a déjà joué. Une seule chance par personne !`;
-      return;
-    }
 
     currentUser = { name, normName };
     loginCard.style.display = 'none';
     gameWrap.style.display = 'flex';
     helloMsg.innerHTML = `Salut <b>${escapeHtml(name)}</b> 👋 — c'est ton seul lancer, vas-y !`;
-    await renderScores();
   });
 
   usernameInput.addEventListener('keydown', (e) => {
     if(e.key === 'Enter') startBtn.click();
   });
-
-  function escapeHtml(str){
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
-  }
 
   coin.addEventListener('click', async () => {
     if(hasPlayed || !currentUser) return;
@@ -549,13 +610,11 @@
     coin.classList.add('disabled');
     tapHint.textContent = '🎲 La pièce tourne...';
 
-    // Choix aléatoire
     const winner = Math.random() < 0.5 ? 'dz' : 'at';
-    // Nombre de tours complets + alignement final
-    const baseSpins = 5; // tours complets garantis
+    const baseSpins = 5;
     const finalRotation = winner === 'dz'
-      ? baseSpins * 360            // face DZ visible (0°, multiples de 360)
-      : baseSpins * 360 + 180;     // face AT visible (180°, +180)
+      ? baseSpins * 360            // face 1 (Algérie) visible
+      : baseSpins * 360 + 180;     // face 2 (Autriche) visible
 
     coin.style.setProperty('--final-rot', finalRotation + 'deg');
     coin.classList.add('flipping');
@@ -567,34 +626,34 @@
   });
 
   async function onCoinLanded(winner){
-    // Enregistrer le résultat pour ce joueur (empêche de rejouer)
-    const playerSaved = await markNamePlayed(currentUser.normName, winner);
-
-    // Mettre à jour le score global (on relit juste avant d'écrire pour limiter les collisions)
-    const scores = await getScores();
-    scores[winner] = (scores[winner] || 0) + 1;
-    const scoreSaved = await saveScores(scores);
-    await renderScores();
-
     const isDz = winner === 'dz';
+    let saveOk = true;
+    let alreadyPlayed = false;
+
+    try{
+      await recordResult(currentUser.normName, currentUser.name, winner);
+    }catch(e){
+      saveOk = false;
+      alreadyPlayed = e && e.message === 'ALREADY_PLAYED';
+      console.error('Erreur enregistrement résultat', e);
+    }
+
     resultBanner.innerHTML = isDz
-      ? `<span class="flagbig">🇩🇿</span> L'Algérie l'emporte cette fois !`
-      : `<span class="flagbig">🇦🇹</span> L'Autriche l'emporte cette fois !`;
+      ? `<span class="flagbig">🇩🇿</span> L'Algérie (1) l'emporte cette fois !`
+      : `<span class="flagbig">🇦🇹</span> L'Autriche (2) l'emporte cette fois !`;
     resultBanner.style.background = isDz
       ? 'linear-gradient(135deg, #1aa260, #0c7a45)'
       : 'linear-gradient(135deg, #d6122a, #8e0c1c)';
     resultBanner.classList.add('show');
-    backBtn.style.display = 'block';
 
-    if(playerSaved && scoreSaved){
+    if(saveOk){
       tapHint.textContent = 'Merci d\'avoir joué — reviens voir le classement total ⬇️';
+      launchConfetti(isDz ? '#1aa260' : '#d6122a');
+    } else if(alreadyPlayed){
+      tapHint.textContent = '⚠️ Ce prénom a déjà un résultat enregistré, celui-ci ne compte pas dans le classement.';
     } else {
-      // Le résultat reste affiché et valable pour le joueur, mais on le prévient
-      // que le compteur global n'a peut-être pas pu être mis à jour côté serveur.
-      tapHint.textContent = '⚠️ Ton résultat est là, mais le classement global a eu un souci de connexion. Actualise la page pour réessayer de le voir à jour.';
+      tapHint.textContent = '⚠️ Ton résultat n\'a pas pu être enregistré (connexion). Réessaie en actualisant la page.';
     }
-
-    launchConfetti(isDz ? '#1aa260' : '#d6122a');
   }
 
   function launchConfetti(color){
@@ -619,32 +678,6 @@
       setTimeout(() => el.remove(), duration*1000 + 200);
     }
   }
-
-  backBtn.addEventListener('click', () => {
-    // Réinitialise l'état du jeu sans toucher aux scores globaux
-    hasPlayed = false;
-    currentUser = null;
-
-    coin.classList.remove('flipping', 'disabled');
-    coin.style.removeProperty('--final-rot');
-
-    resultBanner.classList.remove('show');
-    resultBanner.innerHTML = '';
-    resultBanner.style.background = '';
-
-    backBtn.style.display = 'none';
-    tapHint.textContent = '👉 Touche la pièce pour la lancer';
-
-    gameWrap.style.display = 'none';
-    loginCard.style.display = 'block';
-
-    usernameInput.value = '';
-    errorMsg.textContent = '';
-    usernameInput.focus();
-  });
-
-  // Charger le tableau de scores dès le départ (visible même avant connexion ? -> on attend la connexion)
-})();
 </script>
 </body>
 </html>
