@@ -361,6 +361,8 @@
 
   searchInput.addEventListener('input', renderList);
   
+  const scoresRef = ref(db, 'scores');
+  
     const loginCard = document.getElementById('loginCard');
   const gameWrap = document.getElementById('gameWrap');
   const usernameInput = document.getElementById('username');
